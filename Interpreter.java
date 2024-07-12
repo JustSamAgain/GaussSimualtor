@@ -28,6 +28,7 @@ public class Interpreter {
 
     public void run(Interpreter inp){
         Scanner Inp = new Scanner(System.in);
+        boolean execute = true;
         System.out.println("What do you want to do? (customZSF / automatedZSF / automatedRZSF)");
         String input = Inp.next();
         while (!(input.compareTo("customZSF")==0 ||
@@ -45,9 +46,10 @@ public class Interpreter {
         }
         if(input.compareTo("customZSF")==0){
             inp.customZSF();
-        } else if (input.compareTo("automatedZSF")==0 ||
-                input.compareTo("automatedRZSF")==0) {
-            System.out.println("Feature still in work...");
+        } else if (input.compareTo("automatedZSF")==0) {
+            automatedZSF(false);
+        } else if (input.compareTo("automatedRZSF")==0) {
+            automatedZSF(true);
         } else if (input.compareTo("help")==0||
                 input.compareTo("man")==0||
                 input.compareTo("?")==0 ) {
@@ -55,13 +57,29 @@ public class Interpreter {
         }
     }
 
-    /*public void automatedZSF(){
+    public void automatedZSF(boolean reduced){
         boolean execute = true;
         Scanner Inp = new Scanner(System.in);
-        String input = "";
+        String input;
         while(execute){
             makeMtx();
-            //mtx.automatedZSF(this.mtx);
+            mtx.printMx();
+            mtx = rZSF.ZSF(this.mtx, reduced);
+            mtx.printMx();
+            System.out.println("LaTeX output? y/n");
+            input = Inp.next();
+            input = input.toLowerCase();
+            while (!(input.compareTo("y")==0 ||
+                    input.compareTo("n")==0 ||
+                    input.compareTo("j")==0 ||
+                    input.compareTo("x")==0)) {
+                System.out.println("Ich benötige einen gültigen Input");
+                input = Inp.next();
+                input = input.toLowerCase();
+            }
+            if (input.compareTo("y")==0 || input.compareTo("j")==0){
+                System.out.println(mtx.latexOut.makeLaTeX());
+            }
             System.out.println("again? y/n");
             input = Inp.next();
             input = input.toLowerCase();
@@ -75,7 +93,7 @@ public class Interpreter {
             }
             execute = (input.compareTo("y")==0 || input.compareTo("j")==0);
         }
-    }*/
+    }
 
     public void customZSF(){
         boolean execute = true;
