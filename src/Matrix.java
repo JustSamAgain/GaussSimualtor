@@ -5,7 +5,6 @@ public class Matrix {
     private float[][] mtx;
     private float[] swapRow;
     private float[] swapColumn;
-    private char target = 'M';  //M=Main
     LaTeXOutput latexOut;
     RuntimeException rowDoesntExist = new RuntimeException("This row doesn't exist, sorry");
     RuntimeException columnDoesntExit = new RuntimeException("This column doesn't exist, sorry");
@@ -83,12 +82,6 @@ public class Matrix {
         this.mtx = mtx;
     }
 
-    public char getTarget() {
-        return target;
-    }
-    public void setTarget(char target) {
-        this.target = target;
-    }
     public float valueAt(int i, int j){
         if(i>rows || i==0) throw rowDoesntExist;
         if (j>columns || j==0) throw columnDoesntExit;
@@ -233,6 +226,6 @@ public class Matrix {
             System.arraycopy(this.getMtx()[i], 0, temp[i], 0, rows);
         }
         mtxAdd.setMtx(temp);
-        latexOut.mtxHistoryMain.add(mtxAdd);                                                                                 //case  M/S/T!!
+        latexOut.mtxHistory.add(mtxAdd);                                                                                 //case  M/S/T!!
     }
 }

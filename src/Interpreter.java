@@ -26,10 +26,86 @@ public class Interpreter {
         test();
     }
 
+    public void run(Interpreter inp){
+        Scanner Inp = new Scanner(System.in);
+        boolean execute = true;
+        System.out.println("What do you want to do? (customZSF / automatedZSF / automatedRZSF)");
+        String input = Inp.next();
+        while (!(input.compareTo("customZSF")==0 ||
+                input.compareTo("automatedZSF")==0 ||
+                input.compareTo("automatedRZSF")==0 ||
+                input.compareTo("exit")==0 ||
+                input.compareTo("stop")==0||
+                input.compareTo("!")==0||
+                input.compareTo("help")==0||
+                input.compareTo("man")==0||
+                input.compareTo("?")==0 ||
+                input.compareTo("")==0)) {
+            System.out.println("Ich benötige einen gültigen Input");
+            input = Inp.next();
+        }
+        if(input.compareTo("customZSF")==0){
+            inp.customZSF();
+        } else if (input.compareTo("automatedZSF")==0) {
+            automatedZSF(false);
+        } else if (input.compareTo("automatedRZSF")==0) {
+            automatedZSF(true);
+        } else if (input.compareTo("help")==0||
+                input.compareTo("man")==0||
+                input.compareTo("?")==0 ) {
+            printManual();
+        }
+    }
+
+    public void automatedZSF(boolean reduced){
+        boolean execute = true;
+        Scanner Inp = new Scanner(System.in);
+        String input;
+        while(execute){
+            makeMtx();
+            mtx.printMx();
+            mtx = rZSF.ZSF(this.mtx, reduced);
+            mtx.printMx();
+            System.out.println("LaTeX output? y/n");
+            input = Inp.next();
+            input = input.toLowerCase();
+            while (!(input.compareTo("y")==0 ||
+                    input.compareTo("n")==0 ||
+                    input.compareTo("j")==0 ||
+                    input.compareTo("x")==0)) {
+                System.out.println("Ich benötige einen gültigen Input");
+                input = Inp.next();
+                input = input.toLowerCase();
+            }
+            if (input.compareTo("y")==0 || input.compareTo("j")==0){
+                System.out.println(mtx.latexOut.makeLaTeX());
+            }
+            System.out.println("again? y/n");
+            input = Inp.next();
+            input = input.toLowerCase();
+            while (!(input.compareTo("y")==0 ||
+                    input.compareTo("n")==0 ||
+                    input.compareTo("j")==0 ||
+                    input.compareTo("x")==0)) {
+                System.out.println("Ich benötige einen gültigen Input");
+                input = Inp.next();
+                input = input.toLowerCase();
+            }
+            execute = (input.compareTo("y")==0 || input.compareTo("j")==0);
+        }
+    }
+
     public void customZSF(){
-        makeMtx();
-        mtx.printMx();
-        getNewInput();
+        boolean execute = true;
+        while(execute){
+            makeMtx();
+            mtx.printMx();
+            int k;
+            do {
+                k = getNewInput();
+            } while (k == 1);
+            execute = (k==2);
+        }
     }
     private Matrix makeMtx(){
         int rows, columns;
@@ -56,8 +132,8 @@ public class Interpreter {
         mtx = new Matrix(rows, columns);
         float[] rowValues = new float[columns];
 
-        mtx.latexOut.rowsMain = rows;                                                                                     //case ?
-        mtx.latexOut.columnsMain = columns;                                                                               //case ?
+        mtx.latexOut.rows = rows;
+        mtx.latexOut.columns = columns;
 
         for (int i = 1; i<=rows; i++) {
             System.out.println("Bitte geben Sie die Werte der Zeile Nr."+ i + " (abgetrennt durch Leerzeichen) ein:");
@@ -76,7 +152,7 @@ public class Interpreter {
         return mtx;
     }
 
-    private void getNewInput(){
+    private int getNewInput(){
         Scanner Inp = new Scanner(System.in);
         System.out.print("Next change: ");
         String command = Inp.nextLine();
@@ -85,10 +161,12 @@ public class Interpreter {
             printManual();
         } else if (command.compareTo("stop")==0 || command.compareTo("stop!")==0 || command.compareTo("!")==0 ||
         command.compareTo("stop, stop!, !")==0 || command.compareTo("exit")==0) {
-            return;
+            return 0;
         } else if (command.compareTo("latex")==0 || command.compareTo("output")==0 || command.compareTo("print")==0 ||
                 command.compareTo("tex")==0 || command.compareTo("x")==0 || command.compareTo("out")==0) {
-            System.out.println(mtx.latexOut.makeLaTeX('M'));                                                       //case!
+            System.out.println(mtx.latexOut.makeLaTeX());
+        } else if (command.compareTo("again")==0 || command.compareTo("new")==0 || command.compareTo("+")==0) {
+            return 2;
         } else {
             String ToDo = "";
             int first = 0; //addr first row
@@ -105,7 +183,7 @@ public class Interpreter {
                     }
                     if (letter == 'V' && i != 0 && command.charAt(i - 1) == 'I') {
                         if (readPointer == 1) first = add - first;
-                        if (readPointer == 2) second = add - first;
+                        if (readPointer == 2) second = add - second;
                     } else if (readPointer == 1) {
                         first += add;
                     } else if (readPointer == 2) {
@@ -156,7 +234,7 @@ public class Interpreter {
             }
             execute(ToDo, first, second, factor);
         }
-        getNewInput();
+        return 1;
     }
         private void execute(String ToDO, int first, int second, float factor){
         if(ToDO.compareTo("mult")==0) mtx.multiplyRowWith(first, factor);
@@ -165,16 +243,35 @@ public class Interpreter {
         mtx.printMx();
     }
         public void printManual(){
-        System.out.print("Sie können den GaussSimulator nutzen indem Sie sich an die nachfolgenden Befehle halten:\n" +
-                "manual, man, help      :falls Sie Hilfe brauchen und diese Anleitung nochmal sehen wollen\n" +
-                "Falls Sie zwei Zeilen Addieren/Subtrahieren wollen, ist folgendes Wichtig für Sie:\n" +
-                "   Die Werte der Zeilen können Sie mit den Römischen Ziffern eingeben, also: I, II, III, IV, V, ...\n" +
-                "   Dabei sollten Sie sich an folgende Konvention halten: [ErsteZeile][Operator]([Faktor])[ZweiteZeile]\n" +
-                "   dabei können die Operatoren '+' und '-' sein.\n" +
-                "       Also bspw.: II+(2)III oder III-IV\n" +
-                "Sollten sie auf eine Zeile einfach nur einen Faktor drauf Multiplizieren gehen Sie bitte wie folgt vor:\n" +
-                "   [faktor][BetreffendeZeile]\n" +
-                "       also bspw. 0.5III oder 0.5*IV\n" +
-                "stop, stop!, !           :if you want to stop\n");
+        System.out.print("""
+                Sie können den GaussSimulator nutzen indem Sie sich an die nachfolgenden Befehle halten:
+                manual, man, help, ?                    :falls Sie Hilfe brauchen und diese Anleitung nochmal sehen wollen
+                
+                automatedZSF/automatedRZSF mode:
+                    automatically makes the reduced-rows-columns form of the matrix for you
+                
+                customZSF mode:
+                Falls Sie zwei Zeilen Addieren/Subtrahieren wollen, ist folgendes Wichtig für Sie:
+                   Die Werte der Zeilen können Sie mit den Römischen Ziffern eingeben, also: I, II, III, IV, V, ...
+                   Dabei sollten Sie sich an folgende Konvention halten: [ErsteZeile][Operator]([Faktor])[ZweiteZeile]
+                   dabei können die Operatoren '+' und '-' sein.
+                       Also bspw.: II+(2)III oder III-IV
+                Sollten sie auf eine Zeile einfach nur einen Faktor drauf Multiplizieren gehen Sie bitte wie folgt vor:
+                   [faktor][BetreffendeZeile]
+                       also bspw. 0.5III oder 0.5*IV
+                stop, stop!, !                          :if you want to stop
+                latex, tex, output, print, out, x       :to get the latex-output
+                again, new, +                           :if you want to calculate a new Matrix
+                
+                LaTeX-Output: Damit die Darstellung der Römischen Ziffern funktioniert ist es nötig folgenden Command einzurichten:
+                '''
+                \\newcommand{\\rom}[1]{\\uppercase\\expandafter{\\romannumeral #1\\relax}}
+                '''
+                """);
+    }
+
+    public static void main(String[] args) {
+        Interpreter Inp = new Interpreter();
+        Inp.run(Inp);
     }
 }
