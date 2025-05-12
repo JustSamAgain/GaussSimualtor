@@ -6,7 +6,7 @@ Quick and simple java-programm for creating and editing matrix.
 
 How to use:
 If you want to add/subtract two rows, you can use the roman numbers for assigning the rows:<br>
-e.g.: I, II, III, IV, V, ...<b>
+e.g.: I, II, III, IV, V, ...<br>
 
 You need to remember following syntax:<br>
 [first-row][operator][factor][second-row] while the operators can be '+' or '-'<br>
