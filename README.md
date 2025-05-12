@@ -1,4 +1,4 @@
-# GaussSimualtor
+# GaussSimualtor <- yeah "Simualtor"..
 
 #currently only in german!#
 
@@ -10,10 +10,10 @@ e.g.: I, II, III, IV, V, ...<br>
 
 You need to remember following syntax:<br>
 [first-row][operator][factor][second-row] while the operators can be '+' or '-'<br>
-e.g.: II+(2)III oder III-IV<br>
+e.g.: II+(2)III or III-IV<br>
 If you just want to mulitply a row with some factor please use following syntax:<br>
 [faktor][row-to-multiply-with]<br>
-e.g.: 0.5III oder 0.5*IV
+e.g.: 0.5III or 0.5*IV
 
 manual, man, help, ?                    :if you need help and wand to see the manual<br>
 stop, stop!, !                          :if you want to stop<br>
